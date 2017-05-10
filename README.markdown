@@ -1,8 +1,8 @@
 
- Basketflux
------------
+ Reactive MatchDay
+------------------
 
- **Basketflux** is a sample application using the following technology stack:
+ **Reactive MatchDay** is a testing Java application that uses the following technology stack:
 
     * Spring Boot 2.0.0 (`2.0.0.BUILD-SNAPSHOT`)
     * Spring Framework 5 (`5.0.0.BUILD-SNAPSHOT`)
