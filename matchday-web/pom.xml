@@ -3,12 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.github.danielfernandez.basketflux</groupId>
-	<artifactId>basketflux-web</artifactId>
+	<groupId>com.github.danielfernandez.matchday</groupId>
+	<artifactId>matchday-web</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>basketflux-web</name>
+	<name>matchday-web</name>
 	<description>Demo project for Spring Boot</description>
 
 	<parent>
@@ -27,9 +27,9 @@
 	</licenses>
 
 	<scm>
-		<url>scm:git:git@github.com:danielfernandez/basketflux.git</url>
-		<connection>scm:git:git@github.com:danielfernandez/basketflux.git</connection>
-		<developerConnection>scm:git:git@github.com:danielfernandez/basketflux.git</developerConnection>
+		<url>scm:git:git@github.com:danielfernandez/reactive-matchday.git</url>
+		<connection>scm:git:git@github.com:danielfernandez/reactive-matchday.git</connection>
+		<developerConnection>scm:git:git@github.com:danielfernandez/reactive-matchday.git</developerConnection>
 	</scm>
 
 	<developers>
