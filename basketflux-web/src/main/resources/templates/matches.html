@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Matches</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+  <table>
+      <tr data-th-each="match : ${matches}">
+          <td data-th-text="${match.teamA}">...</td>
+          <td data-th-text="${match.teamB}">...</td>
+      </tr>
+  </table>
+
+</body>
+</html>

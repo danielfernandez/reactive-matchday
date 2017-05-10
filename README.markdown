@@ -17,4 +17,5 @@ Highlights of this application are:
     * Use of Server-Sent Events (SSE) rendered in HTML by Thymeleaf from a reactive data stream.
     * Use of Spring Data MongoDB's reactive driver support.
     * Use of Spring Data MongoDB's support for infinite reactive data streams based on tailable cursors.
+    * Use of Thymeleaf's fully-HTML5-compatible syntax
 
