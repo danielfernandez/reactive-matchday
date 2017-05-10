@@ -1,4 +1,4 @@
-package com.github.danielfernandez.basketflux.business;
+package com.github.danielfernandez.matchday.business;
 
 
 import org.springframework.data.annotation.Id;

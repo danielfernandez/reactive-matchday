@@ -1,8 +1,8 @@
-package com.github.danielfernandez.basketflux.web.controller;
+package com.github.danielfernandez.matchday.web.controller;
 
 
-import com.github.danielfernandez.basketflux.business.Match;
-import com.github.danielfernandez.basketflux.business.repository.MatchRepository;
+import com.github.danielfernandez.matchday.business.Match;
+import com.github.danielfernandez.matchday.business.repository.MatchRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;

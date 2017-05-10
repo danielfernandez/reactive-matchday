@@ -1,28 +1,26 @@
-package com.github.danielfernandez.basketflux;
+package com.github.danielfernandez.matchday;
 
 import java.util.Collections;
 import java.util.logging.Level;
 
-import com.github.danielfernandez.basketflux.business.Match;
-import com.github.danielfernandez.basketflux.business.Player;
-import com.github.danielfernandez.basketflux.business.Team;
-import com.github.danielfernandez.basketflux.util.Data;
+import com.github.danielfernandez.matchday.business.Match;
+import com.github.danielfernandez.matchday.business.Player;
+import com.github.danielfernandez.matchday.business.Team;
+import com.github.danielfernandez.matchday.util.Data;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.Query;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
 
 @SpringBootApplication
-public class BasketfluxWebApplication {
+public class MatchDayWebApplication {
 
-	private static final String LOGGER_INITIALIZE = BasketfluxWebApplication.class.getName() + ".DATA_INIT";
+	private static final String LOGGER_INITIALIZE = MatchDayWebApplication.class.getName() + ".DATA_INIT";
 
 
 	@Bean
@@ -95,7 +93,7 @@ public class BasketfluxWebApplication {
 
 
 	public static void main(String[] args) {
-		SpringApplication.run(BasketfluxWebApplication.class, args);
+		SpringApplication.run(MatchDayWebApplication.class, args);
 	}
 
 }

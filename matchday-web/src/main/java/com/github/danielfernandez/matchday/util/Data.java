@@ -1,11 +1,11 @@
-package com.github.danielfernandez.basketflux.util;
+package com.github.danielfernandez.matchday.util;
 
 
 import java.util.Arrays;
 import java.util.List;
 
-import com.github.danielfernandez.basketflux.business.Player;
-import com.github.danielfernandez.basketflux.business.Team;
+import com.github.danielfernandez.matchday.business.Player;
+import com.github.danielfernandez.matchday.business.Team;
 
 public class Data {
 
