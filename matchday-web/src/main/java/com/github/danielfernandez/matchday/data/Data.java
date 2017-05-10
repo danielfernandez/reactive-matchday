@@ -1,13 +1,26 @@
-package com.github.danielfernandez.matchday.util;
+package com.github.danielfernandez.matchday.data;
 
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 
+import com.github.danielfernandez.matchday.business.Match;
+import com.github.danielfernandez.matchday.business.MatchEvent;
 import com.github.danielfernandez.matchday.business.Player;
 import com.github.danielfernandez.matchday.business.Team;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
+/*
+ * Class containing the test data that will be used, as well as the logic required to
+ * insert it into MongoDB at application startup.
+ */
 public class Data {
+
+    private static final String LOGGER_INITIALIZE = Data.class.getName() + ".INITIALIZE";
 
 
     // This list has to have an even number of elements, in order to form matches with them
@@ -229,6 +242,57 @@ public class Data {
                     new Player("PAW","Kellee Boysenberry"),
                     new Player("BAD","Pasquale Guava"));
 
+    
+    
+    
+    public static void initializeAllData(final ReactiveMongoTemplate mongoTemplate) {
+        
+        /*
+         *  Drop collections, then create them again
+         */
+        final Mono<Void> initializeCollections =
+                mongoTemplate
+                        .dropCollection(Team.class)
+                        .then(mongoTemplate.dropCollection(Match.class))
+                        .then(mongoTemplate.dropCollection(Player.class))
+                        .then(mongoTemplate.dropCollection(MatchEvent.class))
+                        .then(mongoTemplate.createCollection(Team.class))
+                        .then(mongoTemplate.createCollection(Match.class))
+                        .then(mongoTemplate.createCollection(Player.class))
+                        .then(mongoTemplate.createCollection(MatchEvent.class))
+                        .then();
+
+        /*
+         * Add some test data to the collections: teams and players will come from the
+         * utility Data class, but we will generate matches between teams randomly each
+         * time the application starts (for the fun of it)
+         */
+        final Mono<Void> initializeData =
+                mongoTemplate
+                        // Insert all the teams into the corresponding collection and log
+                        .insert(Data.TEAMS, Team.class)
+                        .log(LOGGER_INITIALIZE, Level.FINEST)
+                        // Collect all inserted team codes and randomly shuffle the list
+                        .map(Team::getCode).collectList().doOnNext(Collections::shuffle)
+                        .flatMapMany(list -> Flux.fromIterable(list))
+                        // Create groups of two teams and insert a new Match for them
+                        .buffer(2).map(twoTeams -> new Match(twoTeams.get(0), twoTeams.get(1)))
+                        .flatMap(mongoTemplate::insert)
+                        .log(LOGGER_INITIALIZE, Level.FINEST)
+                        // Finally insert the players into their corresponding collection
+                        .thenMany(Flux.fromIterable(Data.PLAYERS))
+                        .flatMap(mongoTemplate::insert)
+                        .log(LOGGER_INITIALIZE, Level.FINEST)
+                        .then();
+
+
+        /*
+         * Perform the initialization, blocking (that's OK, we are bootstrapping a testing app)
+         */
+        initializeCollections.then(initializeData).block();
+        
+    }
+    
 
 
     private Data() {
