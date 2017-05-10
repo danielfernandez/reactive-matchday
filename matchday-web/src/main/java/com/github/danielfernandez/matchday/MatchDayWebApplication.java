@@ -1,26 +1,17 @@
 package com.github.danielfernandez.matchday;
 
-import java.util.Collections;
-import java.util.logging.Level;
-
-import com.github.danielfernandez.matchday.business.Match;
-import com.github.danielfernandez.matchday.business.Player;
-import com.github.danielfernandez.matchday.business.Team;
-import com.github.danielfernandez.matchday.util.Data;
+import com.github.danielfernandez.matchday.agents.MatchEventAgent;
+import com.github.danielfernandez.matchday.business.MatchEvent;
+import com.github.danielfernandez.matchday.data.Data;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 @SpringBootApplication
 public class MatchDayWebApplication {
-
-	private static final String LOGGER_INITIALIZE = MatchDayWebApplication.class.getName() + ".DATA_INIT";
 
 
 	@Bean
@@ -28,68 +19,23 @@ public class MatchDayWebApplication {
 		return args -> {
 
 			/*
-			 *  Drop collections, then create them again
+			 * INSERT ALL THE NEEDED TEST DATA (will block)
 			 */
-			final Mono<Void> initializeCollections =
-					mongoTemplate
-							.dropCollection(Team.class)
-							.then(mongoTemplate.dropCollection(Match.class))
-							.then(mongoTemplate.dropCollection(Player.class))
-							.then(mongoTemplate.createCollection(Team.class))
-							.then(mongoTemplate.createCollection(Match.class))
-							.then(mongoTemplate.createCollection(Player.class))
-							.then();
+			Data.initializeAllData(mongoTemplate);
 
 			/*
-			 * Add some test data to the collections: teams and players will come from the
-			 * utility Data class, but we will generate matches between teams randomly each
-			 * time the application starts (for the fun of it)
+			 * INITIALIZATION OF THE MATCH EVENT STREAM (insertions between 1 and 5 secs)
 			 */
-			final Mono<Void> initializeData =
-					mongoTemplate
-							// Insert all the teams into the corresponding collection and log
-							.insert(Data.TEAMS, Team.class)
-							.log(LOGGER_INITIALIZE, Level.FINEST)
-							// Collect all inserted team codes and randomly shuffle the list
-							.map(Team::getCode).collectList().doOnNext(Collections::shuffle)
-							.flatMapMany(list -> Flux.fromIterable(list))
-							// Create groups of two teams and insert a new Match for them
-							.buffer(2).map(twoTeams -> new Match(twoTeams.get(0), twoTeams.get(1)))
-							.flatMap(mongoTemplate::insert)
-							.log(LOGGER_INITIALIZE, Level.FINEST)
-							// Finally insert the players into their corresponding collection
-							.thenMany(Flux.fromIterable(Data.PLAYERS))
-							.flatMap(mongoTemplate::insert)
-							.log(LOGGER_INITIALIZE, Level.FINEST)
-							.then();
-
-
-			initializeCollections.then(initializeData).block();
-
-
-			findPlayersForMatch(
-					mongoTemplate,
-					mongoTemplate.findAll(Match.class)
-						.take(1)
-						.log(LOGGER_INITIALIZE, Level.FINEST).single())
-					.log(LOGGER_INITIALIZE, Level.FINEST)
-					.then().block();
+			final MatchEventAgent matchEventAgent = new MatchEventAgent(mongoTemplate);
+			final Flux<MatchEvent> matchEventStream = matchEventAgent.createAgentStream();
+			// Subscribe and just let it run (forever)
+			matchEventStream.subscribe();
 
 
 		};
 	}
 
 
-	private Flux<Player> findPlayersForMatch(final ReactiveMongoTemplate mongoTemplate, final Mono<Match> match) {
-		return match.flatMapMany(m -> {
-			final Query query =
-					Query.query(
-							new Criteria().orOperator(
-									Criteria.where("teamCode").is(m.getTeamACode()),
-									Criteria.where("teamCode").is(m.getTeamBCode())));
-			return mongoTemplate.find(query, Player.class);
-		});
-	}
 
 
 	public static void main(String[] args) {
