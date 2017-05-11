@@ -31,6 +31,10 @@
                     matchSummaryBlock.innerHTML = event.data;
                 });
 
+                this.source.onerror = function () {
+                    this.close();
+                };
+
             };
 
             this.stop = function() {
@@ -75,6 +79,10 @@
 
 
                 });
+
+                this.source.onerror = function () {
+                    this.close();
+                };
 
             };
 
