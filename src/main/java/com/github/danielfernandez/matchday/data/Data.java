@@ -10,6 +10,7 @@ import com.github.danielfernandez.matchday.business.Match;
 import com.github.danielfernandez.matchday.business.MatchEvent;
 import com.github.danielfernandez.matchday.business.Player;
 import com.github.danielfernandez.matchday.business.Team;
+import org.springframework.data.mongodb.core.CollectionOptions;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -259,7 +260,7 @@ public class Data {
                         .then(mongoTemplate.createCollection(Team.class))
                         .then(mongoTemplate.createCollection(Match.class))
                         .then(mongoTemplate.createCollection(Player.class))
-                        .then(mongoTemplate.createCollection(MatchEvent.class))
+                        .then(mongoTemplate.createCollection(MatchEvent.class, CollectionOptions.empty().capped(10000)))
                         .then();
 
         /*

@@ -23,12 +23,15 @@ public class MatchEventAgent {
 
 	private static final List<MatchEvent.Type> EVENT_TYPES_BY_PROBABILITY =
 			Arrays.asList(
-					// Probability of event being a GOAL: 40%
+					// Probability of event being a GOAL: 45%
+					MatchEvent.Type.GOAL, MatchEvent.Type.GOAL, MatchEvent.Type.GOAL, MatchEvent.Type.GOAL,
 					MatchEvent.Type.GOAL, MatchEvent.Type.GOAL, MatchEvent.Type.GOAL, MatchEvent.Type.GOAL,
 					// Probability of event being a YELLOW CARD: 50%
 					MatchEvent.Type.YELLOW_CARD, MatchEvent.Type.YELLOW_CARD, MatchEvent.Type.YELLOW_CARD,
 					MatchEvent.Type.YELLOW_CARD, MatchEvent.Type.YELLOW_CARD,
-					// Probability of event being a RED CARD: 10%
+					MatchEvent.Type.YELLOW_CARD, MatchEvent.Type.YELLOW_CARD, MatchEvent.Type.YELLOW_CARD,
+					MatchEvent.Type.YELLOW_CARD, MatchEvent.Type.YELLOW_CARD,
+					// Probability of event being a RED CARD: 5%
 					MatchEvent.Type.RED_CARD
 			);
 
@@ -98,7 +101,7 @@ public class MatchEventAgent {
 								playersForMatch.collectList().map(this::randomFromlist);
 
 						return chosenPlayer.map(
-								p -> new MatchEvent(m.getId(), randomMatchType(), p.getId()));
+								p -> new MatchEvent(m.getId(), randomMatchType(), p.getTeamCode(), p.getId()));
 
 					});
 	}
