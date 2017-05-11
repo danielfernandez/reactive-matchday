@@ -44,9 +44,19 @@ public class MatchesController {
 
     @RequestMapping({"/","/matches"})
     public String matches(final Model model) {
-        // Match stream will be resolved by WebFlux before Thymeleaf starts rendering...
+
+        // Get the stream of MatchStatus objects. In this case this works as the reactive
+        // equivalent to getting a List<MatchStatus>. Being reactive, it won't be resolved
+        // until really needed (just before rendering the HTML)
         final Flux<MatchStatus> matchStatusStream = this.matchStatusRepository.findAllMatchStatus();
+
+        // By adding this Flux directly to the model (without wrapping) we are indicating that
+        // we want this variable to be completely resolved by Spring WebFlux (without blocking)
+        // before Thymeleaf starts the rendering of the HTML template. That way, this variable
+        // will have for the Thymeleaf engine the exact same appearance as a List<MatchStatus>.
         model.addAttribute("matchStatuses", matchStatusStream);
+
+        // Return the template name (templates/matches.html)
         return "matches";
 
     }
