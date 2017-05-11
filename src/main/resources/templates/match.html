@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>MatchDay: [[|${match.teamA.name} - ${match.teamB.name}|]]</title>
+    <meta charset="UTF-8">
+
+    <script data-th-inline="javascript">
+
+        /*
+         * MatchStatus will be in charge of the EventSource that will retrieve
+         * the Server-Sent Events (SSE) sent from the server to update the match
+         * status.
+         *
+         * NOTE these events will be rendered in HTML by Thymeleaf, so all needed
+         * to insert them into the document will be using the "innerHTML" property.
+         */
+        function MatchStatus () {
+
+            this.source = null;
+
+            this.start = function () {
+
+                var matchSummaryBlock = document.getElementById("matchStatus");
+                var sourceUrl = [[@{|/match/${matchId}/statusStream|}]];
+
+                this.source = new EventSource(sourceUrl);
+
+                this.source.addEventListener("message", function (event) {
+                    // This is just HTML, so no need to do anything else
+                    matchSummaryBlock.innerHTML = event.data;
+                });
+
+            };
+
+            this.stop = function() {
+                this.source.close();
+            }
+
+        }
+
+
+        /*
+         * MatchComments will be in charge of the EventSource that will retrieve
+         * the Server-Sent Events (SSE) sent from the server to update the match
+         * comment list.
+         *
+         * NOTE these events will be rendered in JSON by Spring WebFlux (using Jackson),
+         * so we will need to parse them and intervene on the DOM in order to create
+         * the needed nodes to display the info coming in the JSON objects.
+         */
+        function MatchComments () {
+
+            this.source = null;
+
+            this.start = function () {
+
+                var matchCommentsTable = document.getElementById("matchComments");
+                var sourceUrl = [[@{|/match/${matchId}/commentStream|(timestamp=${commentsTimestamp})}]];
+
+                this.source = new EventSource(sourceUrl);
+
+                this.source.addEventListener("message", function (event) {
+
+                    // These events are JSON, so parsing and DOM fiddling are needed
+
+                    var comment = JSON.parse(event.data);
+
+                    var row = matchCommentsTable.insertRow(0);
+                    var cell1 = row.insertCell(0);
+                    var cell2 = row.insertCell(1);
+
+                    cell1.innerHTML = comment.author;
+                    cell2.innerHTML = comment.text;
+
+
+                });
+
+            };
+
+            this.stop = function() {
+                this.source.close();
+            }
+
+        }
+
+
+        /*
+         * Instantiate both SSE controller objects.
+         */
+        matchStatus = new MatchStatus();
+        matchComments = new MatchComments();
+
+
+        /*
+         * Register callbacks for starting and stopping the SSE controller.
+         */
+        window.onload = function() {
+            matchStatus.start();
+            matchComments.start();
+        };
+        window.onbeforeunload = function() {
+            matchStatus.stop();
+            matchComments.stop();
+        }
+
+    </script>
+
+</head>
+<body>
+
+    <div id="matchStatus">
+      <div data-th-each="status : ${statusStream}">
+          <div>
+              <td>[[${status.teamAName}]]</td>
+              <td>[[${status.teamAScore}]]</td>
+              <td>-</td>
+              <td>[[${status.teamBScore}]]</td>
+              <td>[[${status.teamBName}]]</td>
+          </div>
+          <table>
+              <tr data-th-each="eventInfo : ${status.events}">
+                  <td>[[${eventInfo.type}]]</td>
+                  <td>[[${eventInfo.teamCode}]]</td>
+                  <td>[[${eventInfo.playerName}]]</td>
+              </tr>
+          </table>
+      </div>
+    </div>
+
+    <div>
+        <table id="matchComments">
+            <tr data-th-each="comment : ${commentStream}">
+                <td>[[${comment.author}]]</td>
+                <td>[[${comment.text}]]</td>
+            </tr>
+        </table>
+    </div>
+
+</body>
+</html>

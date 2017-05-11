@@ -1,3 +1,22 @@
+/*
+ * =============================================================================
+ *
+ *   Copyright (c) 2017, Daniel Fernandez (http://github.com/danielfernandez)
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ *
+ * =============================================================================
+ */
 package com.github.danielfernandez.matchday.data;
 
 
@@ -6,10 +25,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
-import com.github.danielfernandez.matchday.business.Match;
-import com.github.danielfernandez.matchday.business.MatchEvent;
-import com.github.danielfernandez.matchday.business.Player;
-import com.github.danielfernandez.matchday.business.Team;
+import com.github.danielfernandez.matchday.business.entities.Match;
+import com.github.danielfernandez.matchday.business.entities.MatchComment;
+import com.github.danielfernandez.matchday.business.entities.MatchEvent;
+import com.github.danielfernandez.matchday.business.entities.Player;
+import com.github.danielfernandez.matchday.business.entities.Team;
 import org.springframework.data.mongodb.core.CollectionOptions;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import reactor.core.publisher.Flux;
@@ -243,7 +263,41 @@ public class Data {
                     new Player("PAW","Kellee Boysenberry"),
                     new Player("BAD","Pasquale Guava"));
 
-    
+
+
+
+    // A series of different comment author names
+    public static final List<String> COMMENT_AUTHORS =
+            Arrays.asList(
+                    "Alnitak", "Alnilam", "Mintaka", "Bellatrix", "Betelgeuse",
+                    "Rigel", "Saiph", "Antares", "Arcturus", "Sirius", "Aldebaran",
+                    "Polaris", "Canopus", "Deneb", "Kochab", "Menkab", "Mirzam",
+                    "Proxima");
+
+
+    // A series of different comment texts
+    public static final List<String> COMMENT_TEXTS =
+            Arrays.asList(
+                    "Come on, push!", "That's a foul!",
+                    "Our side is doing a great match, this is going to be a win",
+                    "What are they doing? we will never win like that!",
+                    "Wasn't that a penalty? That definitely was a penalty. Referee!",
+                    "What a boring match...", "I'm going to fall asleep any moment now",
+                    "So much tension, great game!",
+                    "They need this win, and it shows. We need to defend harder!",
+                    "He should have been dismissed!", "About time we score a goal",
+                    "No way we are going to score a goal playing like that",
+                    "What an incredible play!", "That one deserved a goal",
+                    "Their goalkeeper is doing magic today", "Great save!",
+                    "What a silly way to lose the ball",
+                    "They are having way too many goal opportunities, they will score soon :(",
+                    "Let's hope our keeper didn't get injured there",
+                    "Not the best game I've seen from our team, yet we can win",
+                    "Passing accuracy is killing us today", "That striker is so good!",
+                    "Good defence!", "No, no! Don't lose the ball there!");
+
+
+
     
     
     public static void initializeAllData(final ReactiveMongoTemplate mongoTemplate) {
@@ -257,10 +311,14 @@ public class Data {
                         .then(mongoTemplate.dropCollection(Match.class))
                         .then(mongoTemplate.dropCollection(Player.class))
                         .then(mongoTemplate.dropCollection(MatchEvent.class))
+                        .then(mongoTemplate.dropCollection(MatchComment.class))
                         .then(mongoTemplate.createCollection(Team.class))
                         .then(mongoTemplate.createCollection(Match.class))
                         .then(mongoTemplate.createCollection(Player.class))
-                        .then(mongoTemplate.createCollection(MatchEvent.class, CollectionOptions.empty().capped(10000)))
+                        .then(mongoTemplate.createCollection(
+                                MatchEvent.class, CollectionOptions.empty().capped(104857600))) // max: 100MBytes
+                        .then(mongoTemplate.createCollection(
+                                MatchComment.class, CollectionOptions.empty().capped(104857600))) // max: 100MBytes
                         .then();
 
         /*
@@ -280,6 +338,7 @@ public class Data {
                         .buffer(2).map(twoTeams -> new Match(twoTeams.get(0), twoTeams.get(1)))
                         .flatMap(mongoTemplate::insert)
                         .log(LOGGER_INITIALIZE, Level.FINEST)
+                        .concatMap(match -> mongoTemplate.insert(new MatchEvent(match.getId(), MatchEvent.Type.MATCH_START, null, null)))
                         // Finally insert the players into their corresponding collection
                         .thenMany(Flux.fromIterable(Data.PLAYERS))
                         .flatMap(mongoTemplate::insert)
