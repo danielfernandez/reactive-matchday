@@ -32,7 +32,10 @@ public class MatchSummaryRepository {
     public Flux<MatchSummary> tailMatchSummary(final String matchId) {
 
         final Mono<MatchEventAggregator> matchAgg =
-                createAggregator(this.mongoTemplate.findById(matchId, Match.class));
+                this.mongoTemplate.findById(matchId, Match.class).flatMap(
+                        m -> this.mongoTemplate.findById(m.getTeamACode(), Team.class)
+                                .and(this.mongoTemplate.findById(m.getTeamBCode(), Team.class))
+                                .map(teams -> new MatchEventAggregator(m.getId(), teams.getT1(), teams.getT2())));
 
         // TODO * Order events by timestamp desc (need to add timestamp)
         final Query matchEventQuery = Query.query(Criteria.where("matchId").is(matchId));
@@ -46,14 +49,6 @@ public class MatchSummaryRepository {
 
     }
 
-
-
-    private Mono<MatchEventAggregator> createAggregator(final Mono<Match> match) {
-        return match.flatMap(
-                m -> this.mongoTemplate.findById(m.getTeamACode(), Team.class)
-                            .and(this.mongoTemplate.findById(m.getTeamBCode(), Team.class))
-                            .map(teams -> new MatchEventAggregator(m.getId(), teams.getT1(), teams.getT2())));
-    }
 
 
 
