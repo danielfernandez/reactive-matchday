@@ -2,8 +2,14 @@
 <html>
 <head>
 
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>MatchDay: [[|${match.teamA.name} - ${match.teamB.name}|]]</title>
-    <meta charset="UTF-8">
+
+    <link data-th-href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link data-th-href="@{/css/matchday.css}" rel="stylesheet">
 
     <script data-th-inline="javascript">
 
@@ -70,11 +76,14 @@
 
                     var comment = JSON.parse(event.data);
 
-                    var row = matchCommentsTable.insertRow(0);
+                    var row = matchCommentsTable.getElementsByTagName("tbody")[0].insertRow(0);
                     var cell1 = row.insertCell(0);
                     var cell2 = row.insertCell(1);
 
+                    cell1.className = "author";
                     cell1.innerHTML = comment.author;
+
+                    cell2.className = "text";
                     cell2.innerHTML = comment.text;
 
 
@@ -117,32 +126,52 @@
 </head>
 <body>
 
-    <div id="matchStatus">
-      <div data-th-each="status : ${statusStream}">
-          <div>
-              <td>[[${status.teamAName}]]</td>
-              <td>[[${status.teamAScore}]]</td>
-              <td>-</td>
-              <td>[[${status.teamBScore}]]</td>
-              <td>[[${status.teamBName}]]</td>
-          </div>
-          <table>
-              <tr data-th-each="eventInfo : ${status.events}">
-                  <td>[[${eventInfo.type}]]</td>
-                  <td>[[${eventInfo.teamCode}]]</td>
-                  <td>[[${eventInfo.playerName}]]</td>
-              </tr>
-          </table>
-      </div>
-    </div>
+    <div class="container">
 
-    <div>
-        <table id="matchComments">
-            <tr data-th-each="comment : ${commentStream}">
-                <td>[[${comment.author}]]</td>
-                <td>[[${comment.text}]]</td>
-            </tr>
-        </table>
+        <div id="logo" class="row">
+            <a data-th-href="@{/matches}"><img data-th-src="@{/images/matchday_logo.png}"></a>
+        </div>
+
+        <div class="row">
+
+            <div id="matchStatus" class="col-md-6">
+                <div data-th-each="status : ${statusStream}">
+                    <table class="table">
+                        <tbody>
+                            <tr class="result">
+                                <td class="teamA">[[${status.teamAName}]]</td>
+                                <td class="score">[[${status.teamAScore}]]</td>
+                                <td class="score">[[${status.teamBScore}]]</td>
+                                <td class="teamB">[[${status.teamBName}]]</td>
+                            </tr>
+                            <tr data-th-each="eventInfo : ${status.events}" data-th-classappend="|event${eventInfo.type}|">
+                                <td class="playerA">[[${eventInfo.teamCode == status.teamACode} ? ${eventInfo.playerName}]]</td>
+                                <td class="eventicon"><img data-th-if="${eventInfo.teamCode == status.teamACode}"
+                                                           data-th-src="@{|/images/${eventInfo.type}.png|}"></td>
+                                <td class="eventicon"><img data-th-if="${eventInfo.teamCode == status.teamBCode}"
+                                                           data-th-src="@{|/images/${eventInfo.type}.png|}"></td>
+                                <td class="playerB">[[${eventInfo.teamCode == status.teamBCode} ? ${eventInfo.playerName}]]</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <table id="matchComments" class="table table-striped">
+                    <thead>
+                        <tr><th colspan="2">Match comments</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr data-th-each="comment : ${commentStream}">
+                            <td class="author">[[${comment.author}]]</td>
+                            <td class="text">[[${comment.text}]]</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
     </div>
 
 </body>

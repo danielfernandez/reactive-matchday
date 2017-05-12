@@ -1,0 +1,83 @@
+/*
+ * Styles for MatchDay
+ * ----------------------
+ * Some of these styles could be refactored, and even replaced by bootstrap
+ * predefined classes in some cases, but the idea here is to keep the HTML
+ * as clear as possible from style artifacts so that it better serves its aim
+ * of exemplifying Thymeleaf use in these scenarios.
+ */
+
+#logo {
+    text-align: center;
+}
+
+#logo img {
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+#allMatches th {
+    font-size: 2em;
+    text-align: center;
+}
+.table > tbody > tr.result > td {
+    height: 3.5em;
+    vertical-align: middle;
+    font-size: 1.2em;
+    text-align: center;
+}
+
+.table > tbody > tr.result > td.score {
+    font-size: 1.3em;
+    font-weight: bolder;
+    background-color: #5e5e5e;
+    color: #f0f0f0;
+    width: 45px;
+    border-left: 1px solid #f0f0f0;
+    border-right: 1px solid #f0f0f0;
+}
+
+.table > tbody > tr.result > td.teamA {
+    font-variant: small-caps;
+    font-weight: bold;
+    text-align: right;
+    padding-right: 20px;
+}
+
+.table > tbody > tr.result > td.teamB {
+    font-variant: small-caps;
+    font-weight: bold;
+    text-align: left;
+    padding-left: 20px;
+}
+
+#matchStatus tr > td.playerA {
+    text-align: right;
+}
+
+#matchStatus tr > td.playerB {
+    text-align: left;
+}
+
+#matchStatus tr.eventGOAL > td {
+    font-weight: bold;
+    background-color: #f7eeee;
+}
+
+#matchComments.table > tbody > tr > td.author {
+    font-size: 0.9em;
+    vertical-align: middle;
+    text-align: right;
+}
+
+#matchComments.table > tbody > tr > td.text {
+    font-style: italic;
+}
+
+#matchComments.table > tbody > tr > td.text:before {
+    content: open-quote;
+}
+
+#matchComments.table > tbody > tr > td.text:after {
+    content: close-quote;
+}

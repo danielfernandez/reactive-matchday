@@ -35,7 +35,7 @@ public class MatchCommentAgent {
 
 	private static final String LOGGER_AGENT = MatchCommentAgent.class.getName() + ".EVENTS";
 
-	private static final Duration EVENT_INTERVAL = Duration.ofSeconds(3);
+	private static final Duration EVENT_INTERVAL = Duration.ofSeconds(2);
 
 
 	private final ReactiveMongoTemplate mongoTemplate;

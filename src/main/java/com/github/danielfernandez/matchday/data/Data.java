@@ -290,7 +290,7 @@ public class Data {
                     "What an incredible play!", "That one deserved a goal",
                     "Their goalkeeper is doing magic today", "Great save!",
                     "What a silly way to lose the ball",
-                    "They are having way too many goal opportunities, they will score soon :(",
+                    "They are having way too many goal opportunities, they will score soon!",
                     "Let's hope our keeper didn't get injured there",
                     "Not the best game I've seen from our team, yet we can win",
                     "Passing accuracy is killing us today", "That striker is so good!",
