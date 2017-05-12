@@ -25,7 +25,18 @@ Highlights of this application are:
 
 #### Running
 
-Just execute from the project's folder:
+First make sure MongoDB (3.2+) is running:
+
+```
+$ mongod [your options]
+```
+
+By default this application will expect MongoDB running on `localhost` with a default configuration
+and no authentication, and it will create a database called `matchday` in your server. If you need
+a different configuration you can adjust the connection at the Spring Boot `application.properties`
+file in the app.
+
+Once MongoDB is running, just execute from the project's folder:
 
 ```
 $ mvn -U clean compile spring-boot:run
@@ -39,12 +50,12 @@ Once started, point your browser to `http://localhost:8080`:
 
 ![Matchday: matches page](/doc/matchday_matches.png)
 
-This first page presents a list of the football matches that are currently being played in our
+This first page presents a list of the (randomly generated) football matches that are currently being played in our
 league. This list of matches is rendered by from a `@Controller` which includes a `Flux<MatchInfo>` 
 object in the `Model`, then calls a Thymeleaf view to be rendered. Before actually rendering,
 Spring WebFlux will fully resolve the `Flux` (non-blocking) so that Thymeleaf can iterate it.
  
-For each match:
+If you click on *See Match*:
 
 ![Matchday: match page](/doc/matchday_match.png)
 
@@ -61,12 +72,16 @@ new events in the database. So it is MongoDB who effectively pushes its new data
 application, triggering the rendering of a chunk of HTML and its sending to the browser, all of
 this in a reactive, non-blocking manner.
 
-On the right side, the comments for the match are retrieved in two steps: 1st a list of the
-*comments so far* (until the moment the `@Controller` executes) are retrieved at the server side
-and put into a Thymeleaf *data-driver context variable*, so that Thymeleaf renders them in HTML
-in a *reactive-friendly* way (non-blocking). Then, once the list reaches the browser, another
+On the right side, the comments for the match are retrieved in two steps: 
+
+*1st* a list of the *comments so far* (until the moment the `@Controller` executes) are retrieved at the server side
+and put into a Thymeleaf *data-driver context variable*, so that Thymeleaf renders them into HTML
+in a *reactive-friendly* way (non-blocking) as they are returned by MongoDB. This is not a
+ *tailable cursor*, so the query cursor actually completes. 
+ 
+ *2nd*, once the list reaches the browser, another
 `EventSource` JavaScript object performs a call to a different `@Controller`, which this
-time collects the rest of the match comments (the ones appearing after the moment the page
+time collects the rest of the match comments (the ones generated after the moment the page
 was rendered) in the form of another *tailable cursor*, and renders them in JSON (`@ResponseBody`).
 This way MongoDB will be able to push new comments inserted by the *comments agent* directly
 towards the browser in the form of JSON-rendered Server-Sent Events (SSE), which a bit of
