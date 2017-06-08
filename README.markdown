@@ -4,11 +4,11 @@ Reactive MatchDay
 
 **Reactive MatchDay** is a testing Java application that uses the following technology stack:
 
-   * Thymeleaf 3.0 (`3.0.6.RELEASE`)
-   * Spring Boot 2.0.0 (`2.0.0.BUILD-SNAPSHOT`)
-   * Spring Framework 5 (`5.0.0.BUILD-SNAPSHOT`)
-   * Spring WebFlux (`5.0.0.BUILD-SNAPSHOT`)
-   * Spring Data MongoDB (Reactive) (`2.0.0.BUILD-SNAPSHOT`)
+   * Thymeleaf 3.0 (`master`:`3.0.6.M4`, `dev`:`3.0.7-SNAPSHOT`)
+   * Spring Boot 2.0.0 (`master`:`2.0.0.M1`, `dev`:`2.0.0.BUILD-SNAPSHOT`)
+   * Spring Framework 5 (`master`:`5.0.0.RC1`, `dev`:`5.0.0.BUILD-SNAPSHOT`)
+   * Spring WebFlux (`master`:`5.0.0.RC1`, `dev`:`5.0.0.BUILD-SNAPSHOT`)
+   * Spring Data MongoDB (Reactive) (`master`:`2.0.0.M3`, `dev`:`2.0.0.BUILD-SNAPSHOT`)
    * MongoDB (`3.2+`)
 
 Highlights of this application are:
