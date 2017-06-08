@@ -316,9 +316,9 @@ public class Data {
                         .then(mongoTemplate.createCollection(Match.class))
                         .then(mongoTemplate.createCollection(Player.class))
                         .then(mongoTemplate.createCollection(
-                                MatchEvent.class, CollectionOptions.empty().capped(104857600))) // max: 100MBytes
+                                MatchEvent.class, CollectionOptions.empty().size(104857600).capped())) // max: 100MBytes
                         .then(mongoTemplate.createCollection(
-                                MatchComment.class, CollectionOptions.empty().capped(104857600))) // max: 100MBytes
+                                MatchComment.class, CollectionOptions.empty().size(104857600).capped())) // max: 100MBytes
                         .then();
 
         /*
