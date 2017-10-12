@@ -55,7 +55,7 @@ public class MatchInfoRepository {
     private Mono<MatchInfo> buildMatchInfo(final Match match) {
         // For a specific Match, gets the info of the playing teams and creates the MatchInfo
         return this.mongoTemplate.findById(match.getTeamACode(), Team.class)
-                .and(this.mongoTemplate.findById(match.getTeamBCode(), Team.class))
+                .zipWith(this.mongoTemplate.findById(match.getTeamBCode(), Team.class))
                 .map(teams -> new MatchInfo(match.getId(), teams.getT1(), teams.getT2()));
     }
 
